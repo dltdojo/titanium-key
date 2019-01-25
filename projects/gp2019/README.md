@@ -47,3 +47,31 @@ bitcoin-cli sendtoaddress 12c6DSiU4Rq3P4ZxziKxzrL5LmMBrzjrJX 1.68
 
 - [AVAILABLE] grin-happy-new-pig-year-169.json
 - [USED] grin-happy-new-pig-year-168.json
+
+
+# 物權無因性
+
+- 張淵森觀點：法律學是專業不因民粹而通俗-風傳媒  https://www.storm.mg/article/216286
+
+```
+
++-----------------------+
+|                       |
+|    grin wallet send   |             +---------------------+
+|     -d send.tx        |   send.tx   |                     |
+|     -m file           +-----1------->                     |
+|     1.68              |             |                     |
+|                       | 債權行為     |                     |
+|                       | 買賣契約     | grin wallet receive |
+|  +-----------------+  | send.tx.resp|   -i send.tx        |
+|                       <-----2-------+                     |
+|                       |             |                     |
+|  grin wallet finalize |             |                     |
+|    -i send.tx.resp    |             +----------^----------+
+|                       |                        |
+|                       +---------3--------------+
+|                       |      物權行為
++-----------------------+
+
+
+```
