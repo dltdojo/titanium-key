@@ -1,8 +1,8 @@
 # 一個名為神棍的宗教
 
-「一個名為神棍的宗教」是個以太坊的智能合約教學與演練題材。
+「一個名為神棍的宗教」是個以太坊的智能合約教學與演練題材，「god stick」取自神棍的 google 中翻英結果。
 
-# 合約一版
+# 捐贈191版
 
 - https://remix.ethereum.org/
 
@@ -15,7 +15,7 @@ contract GodStick191 {
     address[] public donators;
     
     constructor () public {
-        preiest = msg.sender;
+        stick = msg.sender;
     }
     
     function gatherDonation() public payable {
@@ -25,7 +25,7 @@ contract GodStick191 {
 }
 ```
 
-# 合約二版
+# 提領192版
 
 ```
 pragma solidity 0.5.6;
@@ -55,9 +55,9 @@ contract GodStick192 {
 }
 ```
 
-# 合約三版
+# 空殼193版
 
-Why ERC20 ? 
+體驗發展出 ERC20 這類標準的脈絡。
 
 ```
 pragma solidity 0.5.6;
@@ -69,15 +69,14 @@ contract GodStick193 {
     address[] public donators;
     
     function gatherDonation() public payable {
-        // TODO
+        // 無
     }
     
     function transferToStick() public St() payable {
-        // TODO
+        // 無
     }
     
     modifier St() {
-       // TODO
        _;
     }
 }
