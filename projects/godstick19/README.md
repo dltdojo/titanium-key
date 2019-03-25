@@ -1,5 +1,15 @@
 # 一個名為神棍的宗教
 
+```
+ #####  ####### ######      #####  ####### ###  #####  #    # 
+#     # #     # #     #    #     #    #     #  #     # #   #  
+#       #     # #     #    #          #     #  #       #  #   
+#  #### #     # #     #     #####     #     #  #       ###    
+#     # #     # #     #          #    #     #  #       #  #   
+#     # #     # #     #    #     #    #     #  #     # #   #  
+ #####  ####### ######      #####     #    ###  #####  #    # 
+```
+
 「一個名為神棍的宗教」是個以太坊的智能合約教學與演練題材，「god stick」取自神棍的 google 中翻英結果。
 
 # 捐贈191版
@@ -44,12 +54,8 @@ contract GodStick192 {
         donators.push(msg.sender);
     }
     
-    modifier St() {
+    function transferToStick() public payable {
         require(msg.sender == stick);
-        _;
-    }
-    
-    function transferToStick() public St() payable {
         stick.transfer(address(this).balance);
     }
 }
@@ -58,6 +64,8 @@ contract GodStick192 {
 # 空殼193版
 
 體驗發展出 ERC20 這類標準的脈絡。
+
+- ERC20 interface https://eips.ethereum.org/EIPS/eip-20
 
 ```
 pragma solidity 0.5.6;
@@ -72,13 +80,10 @@ contract GodStick193 {
         // 無
     }
     
-    function transferToStick() public St() payable {
+    function transferToStick() public payable {
         // 無
     }
     
-    modifier St() {
-       _;
-    }
 }
 ```
 
