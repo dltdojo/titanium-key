@@ -1,4 +1,4 @@
-# 🙏🙏🙏 一個名為神棍的宗教
+# 🙏🙏🙏 神棍教約 (嘲諷性練功)
 
 ```
  #####  ####### ######      #####  ####### ###  #####  #    # 
@@ -10,7 +10,31 @@
  #####  ####### ######      #####     #    ###  #####  #    # 
 ```
 
-「一個名為神棍的宗教」是個以太坊的智能合約教學與演練題材，「god stick」取自神棍的 google 中翻英結果。
+「神棍教約」是個以太坊的智能合約教學與演練題材，「god stick」取自神棍的 google 中翻英結果。
+
+# 自主練習環境
+
+- 桌上型電腦的瀏覽器 (跟練用)
+- Metamask (跟練用)
+- 麥克風 (討論用)
+- jitsi的線上會議室，滿三人開團，將等五分鐘確定是否流團。 https://meet.jit.si/DLTDOJOGodStick19Project
+
+遠方示範端( REMOTE Remix )建議只開啟約800像素寬的瀏覽器畫面來操作，方便跟練端( YOUR Remix )可開另一個對照著練功。
+
+```
++---------------+ +--------------+
+|               | |              |
+|    800x600    | |    800x600   |
+|               | |              |
+|               | |              |
+|    YOUR       | |    REMOTE    |
+|    Remix      | |    Remix     |
+|               | |              |
+|               | |              |
+|               | |              |
+|               | |              |
++---------------+ +--------------+
+```
 
 # 💵💵💵 捐贈191版
 
@@ -95,3 +119,5 @@ contract GodStick193 {
 - How to get on Rinkeby Testnet in less than 10 minutes https://gist.github.com/cryptogoth/10a98e8078cfd69f7ca892ddbdcf26bc
 - Web Payments Overview 1.0 : The methods of payment that may be used for processing the payment request. Examples include: credit card, direct debit, SEPA Credit Transfer, and Bitcoin.  https://www.w3.org/TR/webpayments-overview/
 - JSR 354 provides a portable and extendible framework for handling of Money & Currency. The API models monetary amounts and currencies in a platform independent and portable way, including well defined extension points. JavaMoney http://javamoney.github.io/api.html
+- The 2018 Web Developer Roadmap – codeburst 
+ https://codeburst.io/the-2018-web-developer-roadmap-826b1b806e8d
