@@ -1,5 +1,6 @@
 mod utils;
 
+use bip39::{Mnemonic, MnemonicType, Language};
 use wasm_bindgen::prelude::*;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
@@ -15,5 +16,11 @@ extern {
 
 #[wasm_bindgen]
 pub fn greet() {
-    alert("Hello, gs19wasm DLTDOJO 2019!");
+    // create a new randomly generated mnemonic phrase
+    let mnemonic = Mnemonic::new(MnemonicType::Words12, Language::English);
+    // get the phrase
+    let phrase: &str = mnemonic.phrase();
+    println!("phrase: {}", phrase);
+
+    alert(phrase);
 }
