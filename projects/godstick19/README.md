@@ -1,6 +1,10 @@
+# 前言
+
+原來是測試線上跟練 Remix 環境如何運作，現改為技能樹練習模式，累積可用跟練文件，一次約一小時，朝向無需經驗、無需安裝、無需註冊來設計練習項目。
+
 # 技能樹根
 
-- [地址 addr19](addr18.md), Bitcoin, Ethereum, secp256k1
+- [地址 addr18](addr18.md), Bitcoin, Ethereum, secp256k1
 - [神棍教約 godstick19](godstick19.md), Ethereum, Solidity, Remix
 
 
