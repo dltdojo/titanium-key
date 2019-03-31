@@ -14,11 +14,21 @@
 
                              Cryptographic
                              Hash Function
-
-
-
 ```
 
+
+# 誰的霜淇淋
+
+- uuid={ID1}-{ID2}-{ID3}-{ID4}-{ID5}
+
+```   
+   A   
+  (-)   ID1
+ ( ~)   ID2
+ (- )   ID3
+ \--/   ID4
+  \/    ID5
+```
 
 # 參考資料
 
@@ -27,6 +37,8 @@
 - [programmingbitcoin/ch04.asciidoc at master · jimmysong/programmingbitcoin](https://github.com/jimmysong/programmingbitcoin/blob/master/ch04.asciidoc#address-format)
 - [ethereumbook_zh/第五章.asciidoc at master · cypherpunks-core/ethereumbook_zh](https://github.com/cypherpunks-core/ethereumbook_zh/blob/master/%E7%AC%AC%E4%BA%94%E7%AB%A0.asciidoc)
 - [Keys and Addresses - ch4 - Mastering Ethereum](https://github.com/ethereumbook/ethereumbook/blob/develop/04keys-addresses.asciidoc)
+- [All bitcoin private keys](https://lbc.cryptoguru.org/dio/)
+
 
 ## 其他相關
 
@@ -36,3 +48,12 @@
 - [What's new in TLS 1.3? | Cloudflare](https://www.cloudflare.com/learning-resources/tls-1-3/)
 - [Why Static RSA and Diffie-Hellman cipher suites have been removed in TLS 1.3? - Cryptography Stack Exchange](https://crypto.stackexchange.com/questions/67604/why-static-rsa-and-diffie-hellman-cipher-suites-have-been-removed-in-tls-1-3)
 - [Perfect Forward Secrecy - YouTube](https://www.youtube.com/watch?v=IkM3R-KDu44)
+- [gnab/remark: A simple, in-browser, markdown-driven slideshow tool.](https://github.com/gnab/remark)
+
+### WASM
+
+- [polkadot-js/wasm: A collection of WASM wrappers (mostly around Rust libraries) that are used as faster versions of JS-native functions](https://github.com/polkadot-js/wasm)
+- [bitauth/bitcoin-ts: WebAssembly versions of secp256k1, ripemd160, sha256, sha512, and sha1](https://github.com/bitauth/bitcoin-ts)
+- [parity-bitcoin/keys at master · paritytech/parity-bitcoin](https://github.com/paritytech/parity-bitcoin/tree/master/keys)
+
+

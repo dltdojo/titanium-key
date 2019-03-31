@@ -66,6 +66,7 @@ contract GodStick192 {
 體驗發展出 ERC20 這類標準的脈絡。
 
 - ERC20 interface https://eips.ethereum.org/EIPS/eip-20
+- 提交符合 GodStick193 合約的 Rinkeby 鏈上地址，可轉 1 ether 進入該合約。
 
 ```
 pragma solidity 0.5.6;
