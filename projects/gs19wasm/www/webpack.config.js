@@ -8,6 +8,9 @@ module.exports = {
     filename: "bootstrap.js",
   },
   mode: "development",
+  devServer: {
+    disableHostCheck: true,
+  },
   plugins: [
     new CopyWebpackPlugin(['index.html'])
   ],
