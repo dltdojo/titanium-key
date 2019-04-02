@@ -1,15 +1,16 @@
 mod utils;
 
-extern crate bitcoin;
+extern crate base58;
+// extern crate bitcoin;
 extern crate rustlibsecp256k1;
 
 use bip39::{Language, Mnemonic, MnemonicType};
 use rustlibsecp256k1::{PublicKey, SecretKey};
 use wasm_bindgen::prelude::*;
 
-use bitcoin::network::constants::Network;
-use bitcoin::util::address::Address;
-use bitcoin::util::key;
+// use bitcoin::network::constants::Network;
+// use bitcoin::util::address::Address;
+// use bitcoin::util::key;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -42,6 +43,8 @@ pub fn to_hex_string(bytes: Vec<u8>) -> String {
 #[wasm_bindgen]
 pub fn secp256k1_key() {
     //
+    // Add no-std support by elichai · Pull Request #100 · rust-bitcoin/rust-secp256k1 https://github.com/rust-bitcoin/rust-secp256k1/pull/100
+    // Allow to use external default callbacks by real-or-random · Pull Request #595 · bitcoin-core/secp256k1 https://github.com/bitcoin-core/secp256k1/pull/595
     // gen privatekey and publickey from crate rustlibsecp256k1
     // https://docs.rs/crate/libsecp256k1/0.2.2/source/tests/verify.rs
     //
@@ -60,7 +63,6 @@ pub fn secp256k1_key() {
     console_log!("private key: {}", pri_hex_string);
     console_log!("public key: {}", hex_string);
 
-    //
     // gen bitcoin address from crate bitcoin
     // https://github.com/rust-bitcoin/rust-bitcoin/blob/cea49b6522abada5f34d1034804b89cf24998d61/src/util/address.rs
     // https://github.com/rust-bitcoin/rust-bitcoin/blob/cea49b6522abada5f34d1034804b89cf24998d61/src/util/key.rs
