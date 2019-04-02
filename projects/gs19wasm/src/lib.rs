@@ -1,16 +1,11 @@
 mod utils;
-
+mod addr;
 extern crate base58;
-// extern crate bitcoin;
 extern crate rustlibsecp256k1;
-
 use bip39::{Language, Mnemonic, MnemonicType};
 use rustlibsecp256k1::{PublicKey, SecretKey};
 use wasm_bindgen::prelude::*;
-
-// use bitcoin::network::constants::Network;
-// use bitcoin::util::address::Address;
-// use bitcoin::util::key;
+use addr::bitcoin_addr;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -56,24 +51,20 @@ pub fn secp256k1_key() {
 
     let seckey = SecretKey::parse(&secret).unwrap();
     let pubkey = PublicKey::from_secret_key(&seckey);
-    let pubkey_compressed = PublicKey::parse_compressed(&pubkey.serialize_compressed()).unwrap();
+    // let pubkey_compressed = PublicKey::parse_compressed(&pubkey.serialize_compressed()).unwrap();
     let pri_hex_string = to_hex_string(secret.to_vec());
-    let hex_string = to_hex_string(pubkey_compressed.serialize().to_vec());
+    let hex_string = to_hex_string(pubkey.serialize_compressed().to_vec());
     console_log!("secp256k1 test");
     console_log!("private key: {}", pri_hex_string);
     console_log!("public key: {}", hex_string);
 
-    // gen bitcoin address from crate bitcoin
-    // https://github.com/rust-bitcoin/rust-bitcoin/blob/cea49b6522abada5f34d1034804b89cf24998d61/src/util/address.rs
-    // https://github.com/rust-bitcoin/rust-bitcoin/blob/cea49b6522abada5f34d1034804b89cf24998d61/src/util/key.rs
-    //
-    // let public_key = key::PublicKey::from_slice(&pubkey.serialize()[..]).unwrap();
-    //  note: rust-lld: error: unknown file type: lax_der_parsing.o
+	let addr = bitcoin_addr(&pubkey.serialize());
+	let addr_compressed = bitcoin_addr(&pubkey.serialize_compressed());
+    console_log!("bitcoin address: {}", addr_compressed);
+    console_log!("uncompressed address: {}", addr);
 
-    // Generate pay-to-pubkey-hash address
-    // let address = Address::p2pkh(&public_key, Network::Bitcoin);
-    // println!("{}", &address.to_string());
-    // console_log!("address: {}", &address.to_string());
+    // Bitcoin address: 1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH
+    // uncompressed:  1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm
 }
 
 #[wasm_bindgen]

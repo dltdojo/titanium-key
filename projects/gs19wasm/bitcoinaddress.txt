@@ -1,0 +1,61 @@
+// Messing with Bitcoin Keys and Addresses | A Blog by Richard Kiss  http://blog.richardkiss.com/?p=371
+
+secret exponent: 1
+  hex:           1
+WIF:             KwDiBf89QgGbjEhKnhXJuH7LrciVrZi3qYjgd9M7rFU73sVHnoWn
+  uncompressed:  5HpHagT65TZzG1PH3CSu63k8DbpvD8s5ip4nEB3kEsreAnchuDf
+public pair x:   55066263022277343669578718895168534326250603453777594175500187360389116729240
+public pair y:   32670510020758816978083085130507043184471273380659243275938904335757337482424
+  x as hex:      79be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
+  y as hex:      483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8
+y parity:        even
+key pair as sec: 0279be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798
+  uncompressed:  0479be667ef9dcbbac55a06295ce870b07029bfcdb2dce28d959f2815b16f81798\
+                   483ada7726a3c4655da4fbfc0e1108a8fd17b448a68554199c47d08ffb10d4b8
+hash160:         751e76e8199196d454941c45d1b3a323f1433bd6
+  uncompressed:  91b24bf9f5288532960ac687abb035127b1d28a5
+Bitcoin address: 1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH
+  uncompressed:  1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm
+
+
+// https://github.com/paritytech/parity-bitcoin/blob/master/keys/src/address.rs
+
+use base58::{FromBase58, ToBase58};
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum BitcoinNetwork {
+    Mainnet,
+    Testnet,
+}
+
+#[derive(Debug, PartialEq, Clone, Copy)]
+pub enum AddressType {
+    /// Pay to PubKey Hash
+    /// Common P2PKH which begin with the number 1, eg: 1BvBMSEYstWetqTFn5Au4m4GFg7xJaNVN2.
+    /// https://bitcoin.org/en/glossary/p2pkh-address
+    P2PKH,
+    /// Pay to Script Hash
+    /// Newer P2SH type starting with the number 3, eg: 3J98t1WpEZ73CNmQviecrnyiWrnqRhWNLy.
+    /// https://bitcoin.org/en/glossary/p2sh-address
+    P2SH,
+}
+
+// https://github.com/paritytech/parity-bitcoin/blob/master/keys/src/lib.rs
+use hash::{H160, H256};
+
+/// 20 bytes long hash derived from public `ripemd160(sha256(public))`
+pub type AddressHash = H160;
+
+/// `AddressHash` with network identifier and format type
+#[derive(Debug, PartialEq, Clone)]
+pub struct Address {
+    /// The type of the address.
+    pub kind: AddressType,
+    /// The network of the address.
+    pub network: BitcoinNetwork,
+    /// Public key hash.
+    pub hash: AddressHash,
+}
+
+// SLIP-0044 : Registered coin types for BIP-0044 https://github.com/satoshilabs/slips/blob/master/slip-0044.md
+// wallet bip44 path
