@@ -17,8 +17,9 @@ rustlibsecp256k1 = { version = "0.2.2", package = "libsecp256k1" }
 base58 = "0.1"
 ripemd160 = "0.8.0"
 sha2 = "0.8.0"
-# bitcoin = "0.18.0"
+tiny-keccak = "1.4.2"
 tiny-bip39 = { version = "0.6.1", default-features = false }
+uuid = { version = "0.7", features = ["v4", "serde", "wasm-bindgen"] }
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires

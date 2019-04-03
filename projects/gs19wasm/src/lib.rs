@@ -1,11 +1,14 @@
-mod utils;
 mod addr;
+mod utils;
 extern crate base58;
 extern crate rustlibsecp256k1;
+extern crate tiny_keccak;
+extern crate uuid;
+use addr::{addr_bitcoin_fork, AddrHashKind, AddrNetwork};
 use bip39::{Language, Mnemonic, MnemonicType};
 use rustlibsecp256k1::{PublicKey, SecretKey};
+use utils::to_hex_string;
 use wasm_bindgen::prelude::*;
-use addr::bitcoin_addr;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -28,11 +31,6 @@ macro_rules! console_log {
 
 fn log_hello() {
     log("Hello from Rust!");
-}
-
-pub fn to_hex_string(bytes: Vec<u8>) -> String {
-    let strs: Vec<String> = bytes.iter().map(|b| format!("{:02X}", b)).collect();
-    strs.join(" ")
 }
 
 #[wasm_bindgen]
@@ -58,8 +56,18 @@ pub fn secp256k1_key() {
     console_log!("private key: {}", pri_hex_string);
     console_log!("public key: {}", hex_string);
 
-	let addr = bitcoin_addr(&pubkey.serialize());
-	let addr_compressed = bitcoin_addr(&pubkey.serialize_compressed());
+    let addr = addr_bitcoin_fork(
+        &pubkey.serialize(),
+        AddrNetwork::BitcoinMainnet,
+        AddrHashKind::P2PKH,
+        false,
+    );
+    let addr_compressed = addr_bitcoin_fork(
+        &pubkey.serialize_compressed(),
+        AddrNetwork::BitcoinMainnet,
+        AddrHashKind::P2PKH,
+        false,
+    );
     console_log!("bitcoin address: {}", addr_compressed);
     console_log!("uncompressed address: {}", addr);
 
