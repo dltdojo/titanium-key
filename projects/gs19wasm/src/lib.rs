@@ -29,8 +29,10 @@ macro_rules! console_log {
     ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
 }
 
-fn log_hello() {
-    log("Hello from Rust!");
+#[wasm_bindgen]
+pub fn crypto_testlog(){
+    secp256k1_key();
+    // get_mnemonic();
 }
 
 #[wasm_bindgen]
@@ -76,23 +78,21 @@ pub fn secp256k1_key() {
 }
 
 #[wasm_bindgen]
-pub fn greet() {
-    console_log!("hello");
+pub fn greet(){
+    console_log!("Greet");
 }
 
 #[wasm_bindgen]
-pub fn get_mnemonic() {
+pub fn get_mnemonic() -> String {
     // create a new randomly generated mnemonic phrase
     let mnemonic = Mnemonic::new(MnemonicType::Words12, Language::English);
     // get the phrase
-    let phrase: &str = mnemonic.phrase();
-    console_log!("bip39 mnemonic phrase: {}", phrase);
+    mnemonic.phrase().to_string()
 }
 
-#[wasm_bindgen(start)]
-pub fn run() {
-    log_hello();
-    log_hello_marco();
+#[wasm_bindgen]
+pub fn add(a: u32, b: u32) -> u32 {
+    a + b
 }
 
 fn log_hello_marco() {
