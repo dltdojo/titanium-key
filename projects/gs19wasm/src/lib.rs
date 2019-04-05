@@ -1,11 +1,12 @@
 mod addr;
 mod utils;
+mod xrpbase58;
 extern crate base58;
 extern crate rustlibsecp256k1;
 extern crate tiny_keccak;
 extern crate uuid;
 extern crate rustc_hex;
-use addr::{addr_bitcoin_fork, addr_ethereum_fork, AddrHashKind, AddrNetwork};
+use addr::*;
 use bip39::{Language, Mnemonic, MnemonicType};
 use rustlibsecp256k1::{PublicKey, SecretKey};
 use wasm_bindgen::prelude::*;
@@ -40,9 +41,8 @@ pub struct AddressValue {
 }
 
 #[wasm_bindgen]
-pub fn get_address(hexNum: &str) -> JsValue {
-
-    let secret : Vec<u8> = hexNum.from_hex().unwrap();
+pub fn get_address(hex_num: &str) -> JsValue {
+    let secret : Vec<u8> = hex_num.from_hex().unwrap();
     let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
     let pubkey = PublicKey::from_secret_key(&seckey);
     let pser = pubkey.serialize_compressed();
@@ -51,6 +51,12 @@ pub fn get_address(hexNum: &str) -> JsValue {
         &pser,
         AddrNetwork::BitcoinMainnet,
         AddrHashKind::P2PKH, false,);
+    
+    let addr_bitcoin_test = addr_bitcoin_fork(
+        &pser,
+        AddrNetwork::BitcoinTestnet,
+        AddrHashKind::P2PKH, false,);
+
     let addr_litecoin = addr_bitcoin_fork(
         &pser,
         AddrNetwork::LitecoinMainnet,
@@ -63,11 +69,15 @@ pub fn get_address(hexNum: &str) -> JsValue {
 
     let addr_ethereum = addr_ethereum_fork(&pubkey.serialize()[..], true);
 
+    let addr_ripple = addr_ripple(&pser[..], false);
+
     let mut data = HashMap::new();
     data.insert(String::from("bitcoin"), addr_bitcoin);
+    data.insert(String::from("bitcoin_test"), addr_bitcoin_test);
     data.insert(String::from("litecoin"), addr_litecoin);
     data.insert(String::from("dogecoin"), addr_dogecoin);
     data.insert(String::from("ethereum"), addr_ethereum);
+    data.insert(String::from("ripple"), addr_ripple);
     let av = AddressValue {
         data,
     };
@@ -76,9 +86,9 @@ pub fn get_address(hexNum: &str) -> JsValue {
 }
 
 #[wasm_bindgen]
-pub fn bitcoin_addr(hexNum: &str) -> String{
+pub fn bitcoin_addr(hex_num: &str) -> String{
     // let secret : Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001".from_hex().unwrap();
-    let secret : Vec<u8> = hexNum.from_hex().unwrap();
+    let secret : Vec<u8> = hex_num.from_hex().unwrap();
     let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
     let pubkey = PublicKey::from_secret_key(&seckey);
     addr_bitcoin_fork(

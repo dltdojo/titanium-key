@@ -1,4 +1,5 @@
 use base58::ToBase58;
+use crate::xrpbase58::ToXrpBase58;
 // use crate::utils::{to_hex_string};
 use ripemd160::{Digest, Ripemd160};
 use sha2::Sha256;
@@ -159,6 +160,28 @@ fn eip55_checksum(addr: &str, addr_hash: &str) -> String {
     checksum_addr
 }
 
+
+pub fn addr_ripple( pubkey_or_hash: &[u8], is_key_hash: bool,) -> String {
+    // XRP Ledger addresses are encoded using base58  with the Ripple dictionary: rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz. 
+    // https://github.com/ripple/ripple-dev-portal/blob/master/content/_code-samples/address_encoding/encode_address.js#L4
+
+     // Base58Check version prefix
+    let mut addr_bytes: Vec<u8> = vec![0x00];
+
+    // check public key hash
+    let payload: Vec<u8> = if is_key_hash {
+        pubkey_or_hash.to_vec()
+    } else {
+        hash160(pubkey_or_hash)
+    };
+    addr_bytes.extend(payload);
+
+    // checksum = SHA256(SHA256(prefix+data))
+    let chksum = sha256sha256(&addr_bytes[..]);
+    addr_bytes.extend(&chksum[0..4]);
+    ToXrpBase58::to_base58(addr_bytes.as_slice())
+}
+
 pub fn uuid_card(name: &str) -> UuidCard {
     let id = Uuid::new_v4();
     UuidCard {
@@ -310,6 +333,20 @@ mod tests {
         assert_eq!("7e5F4552091a69125d5DfCb7b8C2659029395Bdf", x);
         assert_eq!("7e5f4552091a69125d5dfcb7b8c2659029395bdf", y);
     }
+
+
+    #[test]
+    fn test_ripple_secp256k1_addr() {
+        // https://github.com/ripple/ripple-dev-portal/blob/master/content/_code-samples/address_encoding/encode_address.js#L4
+        // const pubkey_hex = '0303E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D';
+
+        let pubkey_hex = "0303E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D";
+        let pubkey_vec: Vec<u8> = pubkey_hex.from_hex().unwrap();
+        let x = addr_ripple(
+            &pubkey_vec[..], false,);
+        assert_eq!("rnBFvgZphmN39GWzUJeUitaP22Fr9be75H", x);
+    }
+
 
     #[test]
     fn test_eth_checksum() {

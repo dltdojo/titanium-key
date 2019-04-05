@@ -21,11 +21,10 @@
                         el: '#app',
                         data: {
                             addr: 'NULL',
-                            private_key_num: 1
+                            private_key_num: 1984
                         },
                         mounted: function (){
                             var keyNumHex = this.private_key_num.toString(16).padStart(64, "0")
-                            // this.bitcoin_addr = bitcoin_addr(keyNumHex)
                             let x = get_address(keyNumHex);
                             console.log(x);
                             this.addr = x.data
@@ -56,11 +55,13 @@ Address: 加密貨幣之地址
       </pre>  
       <h2>🦀 地址練習測試 🕸️</h2>
       <pre>
-PrivateKey : {{private_key_num}}
-Bitcoin Address: {{addr.bitcoin}}
-Litecoin Address: {{addr.litecoin}}
-Dogecoin Address: {{addr.dogecoin}}
+PrivateKey ( OneKeyToRuleThemAll ) : {{private_key_num}}
+Bitcoin Mainnet Address: {{addr.bitcoin}}
+Bitcoin Testnet Address: {{addr.bitcoin_test}}
+Litecoin Mainnet Address: {{addr.litecoin}}
+Dogecoin Mainnet Address: {{addr.dogecoin}}
 Ethereum Address: {{addr.ethereum}}
+Ripple Address: {{addr.ripple}}
       </pre>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>

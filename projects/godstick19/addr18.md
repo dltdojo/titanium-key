@@ -23,8 +23,6 @@ Address: 加密貨幣之地址
 
 # 誰的霜淇淋
 
-- uuid={ID1}-{ID2}-{ID3}-{ID4}-{ID5}
-
 ```   
    A   
   (-)   ID1
@@ -33,6 +31,8 @@ Address: 加密貨幣之地址
  \--/   ID4
   \/    ID5
 ```
+
+- https://example.com/card?uuid=c145c9f2-d1a6-4118-919f-6b97cf0927d5
 
 # 參考資料
 
