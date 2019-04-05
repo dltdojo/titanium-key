@@ -1,20 +1,18 @@
 <html>
-    <head>
-        <meta content="text/html;charset=utf-8" http-equiv="Content-Type"/>
-        <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900|Material+Icons" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.min.css" rel="stylesheet">
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
-    </head>
+    <head><meta content="text/html;charset=utf-8" http-equiv="Content-Type"/></head>
+    <style>
+      pre {
+        color:white;background:black;margin:0.5em;padding:0.5em;
+      }
+    </style>
     <body>
         <!-- Note the usage of `type=module` here as this is an ES6 module -->
         <script type="module">
             // wasm-pack build --target web
             // https://rustwasm.github.io/docs/wasm-bindgen/examples/without-a-bundler.html
-            import { greet, add, get_mnemonic, crypto_testlog, default as init } from './pkg/gs19wasm.js';
-            
+            import { get_mnemonic, get_address , default as init } from './pkg/gs19wasm.js';
             async function page_init() {
                 await init('./pkg/gs19wasm_bg.wasm');
-                crypto_testlog();
                 vue_init();
             }
             function vue_init(){
@@ -22,73 +20,49 @@
                     { 
                         el: '#app',
                         data: {
-                            message: 'Hello Vue!',
-                            drawer: null,
-                            mnemonic: 'NULL'
+                            addr: 'NULL',
+                            private_key_num: 1
                         },
                         mounted: function (){
-                            this.mnemonic = get_mnemonic()
+                            var keyNumHex = this.private_key_num.toString(16).padStart(64, "0")
+                            // this.bitcoin_addr = bitcoin_addr(keyNumHex)
+                            let x = get_address(keyNumHex);
+                            console.log(x);
+                            this.addr = x.data
                         },
                     })
             }
             page_init();
         </script>
     <div id="app">
-            <v-app id="inspire">
-                    <v-navigation-drawer
-                      v-model="drawer"
-                      fixed
-                      app
-                    >
-                      <v-list dense>
-                        <v-list-tile @click="">
-                          <v-list-tile-action>
-                            <v-icon>home</v-icon>
-                          </v-list-tile-action>
-                          <v-list-tile-content>
-                            <v-list-tile-title>DLTDOJO</v-list-tile-title>
-                          </v-list-tile-content>
-                        </v-list-tile>
-                        <v-list-tile @click="">
-                          <v-list-tile-action>
-                            <v-icon>contact_mail</v-icon>
-                          </v-list-tile-action>
-                          <v-list-tile-content>
-                            <v-list-tile-title>GodStick19</v-list-tile-title>
-                          </v-list-tile-content>
-                        </v-list-tile>
-                        <v-list-tile @click="">
-                          <v-list-tile-action>
-                            <v-icon>person</v-icon>
-                          </v-list-tile-action>
-                          <v-list-tile-content>
-                            <v-list-tile-title>Addr18</v-list-tile-title>
-                          </v-list-tile-content>
-                        </v-list-tile>
-                      </v-list>
-                    </v-navigation-drawer>
-                    <v-toolbar color="indigo" dark fixed app>
-                      <v-toolbar-side-icon @click.stop="drawer = !drawer"></v-toolbar-side-icon>
-                      <v-toolbar-title>DLTDOJO</v-toolbar-title>
-                    </v-toolbar>
-                    <v-content>
-                      <v-container fluid fill-height>
-                        <v-layout>
-                          <v-flex text-xs-center>
-                            <h3>PrivateKey</h3>
-                           01010101
-                            <h3>MNEMONIC</h3>
-                           {{mnemonic}}
-                          </v-flex>
-                        </v-layout>
-                      </v-container>
-                    </v-content>
-                    <v-footer color="indigo" app>
-                      <span class="white--text">&copy; 2017</span>
-                    </v-footer>
-                  </v-app>
+      <h2>🦀 地址 🚴 addr18 🕸️</h2>
+      <pre>
+    Elliptic Curve Multiplication
+    y^2 = x^3+ax+b over Fp
+    (x,y) = n * G
++----------+         +---------+         +---------+
+|          +--------->         +--------->         |
+|PrivateKey|         |PublicKey|         | Address |
+|    n     |         |  (x,y)  |         |   Str   |
+|          <----X----+         <----X----+         |
++----------+         +---------+         +---------+
+                         Cryptographic Hash Function
+
+Elliptic Curve Multiplication: 橢圓曲線乘法
+Cryptographic Hash Function: 密碼學雜湊函數
+PrivateKey: 非對稱式金鑰對之私鑰
+PublicKey: 非對稱式金鑰對之公鑰
+Address: 加密貨幣之地址
+      </pre>  
+      <h2>🦀 地址練習測試 🕸️</h2>
+      <pre>
+PrivateKey : {{private_key_num}}
+Bitcoin Address: {{addr.bitcoin}}
+Litecoin Address: {{addr.litecoin}}
+Dogecoin Address: {{addr.dogecoin}}
+Ethereum Address: {{addr.ethereum}}
+      </pre>
     </div>
     <script src="https://cdn.jsdelivr.net/npm/vue/dist/vue.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/vuetify/dist/vuetify.js"></script>
   </body>
 </html>

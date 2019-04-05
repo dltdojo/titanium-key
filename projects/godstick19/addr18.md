@@ -1,21 +1,25 @@
 # 地址 addr18 (WIP)
 
+- v190405-1 https://jsbin.com/tizonepali/1/
+
 ```
-          Elliptic Curve
-          Multiplication
+    Elliptic Curve Multiplication
+    y^2 = x^3+ax+b over Fp
+    (x,y) = n * G
++----------+         +---------+         +---------+
+|          +--------->         +--------->         |
+|PrivateKey|         |PublicKey|         | Address |
+|    n     |         |  (x,y)  |         |   Str   |
+|          <----X----+         <----X----+         |
++----------+         +---------+         +---------+
+                         Cryptographic Hash Function
 
-+----------+        +---------+        +---------+
-|          |        |         |        |         |
-|          +-------->         +-------->         |
-|PrivateKey|        |PublicKey|        | Address |
-|          |        |         |        |         |
-|          <---X----+         <---X----+         |
-+----------+        +---------+        +---------+
-
-                             Cryptographic
-                             Hash Function
+Elliptic Curve Multiplication: 橢圓曲線乘法
+Cryptographic Hash Function: 密碼學雜湊函數
+PrivateKey: 非對稱式金鑰對之私鑰
+PublicKey: 非對稱式金鑰對之公鑰
+Address: 加密貨幣之地址
 ```
-
 
 # 誰的霜淇淋
 

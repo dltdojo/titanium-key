@@ -1,9 +1,10 @@
 use base58::ToBase58;
-use crate::utils::to_hex_string;
+// use crate::utils::{to_hex_string};
 use ripemd160::{Digest, Ripemd160};
 use sha2::Sha256;
 use tiny_keccak::Keccak;
 use uuid::Uuid;
+use rustc_hex::{FromHex, ToHex};
 
 pub struct UuidCard {
     pub id: Uuid,
@@ -112,7 +113,7 @@ pub fn addr_bitcoin_fork(
 pub fn addr_ethereum_fork(pubkey: &[u8], is_eip55: bool) -> String {
     // It is worth noting that the public key is not formatted with the prefix (hex) 04 when the address is calculated.
     let hashed_key = keccak256(&pubkey[1..65]);
-    let addr = to_hex_string(hashed_key[12..].to_vec());
+    let addr : String = hashed_key[12..].to_hex();
     if is_eip55 {
         eth_checksum(&addr)
     } else {
@@ -127,7 +128,7 @@ pub fn eth_checksum(addr: &str) -> String {
 
     // keccak256 of address
     let hashed_address = keccak256(&lc_addr.as_bytes());
-    let haddr = to_hex_string(hashed_address[..].to_vec());
+    let haddr = hashed_address[..].to_hex::<String>();
 
     // Print final checksum
     eip55_checksum(&lc_addr, &haddr)
@@ -169,7 +170,8 @@ pub fn uuid_card(name: &str) -> UuidCard {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use rustc_hex::{FromHex, ToHex};
+    use primitive_types::{U256,H256};
+    use rustlibsecp256k1::{PublicKey, SecretKey};
 
     #[test]
     fn test_hash160() {
@@ -215,6 +217,20 @@ mod tests {
         );
         assert_eq!("19gH5uhqY6DKrtkU66PsZPUZdzTd11Y7ke", x);
     }
+
+    #[test]
+    fn test_bitcoin_addr1_from_key() {
+        let secret : Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001".from_hex().unwrap();
+        let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
+        let pubkey = PublicKey::from_secret_key(&seckey);
+        let x = addr_bitcoin_fork(
+            &pubkey.serialize_compressed(),
+            AddrNetwork::BitcoinMainnet,
+            AddrHashKind::P2PKH, false,);
+        assert_eq!("1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH", x);
+    }
+
+
 
     #[test]
     fn test_bitcoin_addr_hash() {
@@ -285,6 +301,17 @@ mod tests {
     }
 
     #[test]
+    fn test_ethereum_addr1_key() {
+        let secret : Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001".from_hex().unwrap();
+        let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
+        let pubkey = PublicKey::from_secret_key(&seckey);
+        let x = addr_ethereum_fork(&pubkey.serialize()[..], true);
+        let y = addr_ethereum_fork(&pubkey.serialize()[..], false);
+        assert_eq!("7e5F4552091a69125d5DfCb7b8C2659029395Bdf", x);
+        assert_eq!("7e5f4552091a69125d5dfcb7b8c2659029395bdf", y);
+    }
+
+    #[test]
     fn test_eth_checksum() {
         let addr = "0x5699b1a504f139100b889c7280074c028eb318bb";
         let res = "5699b1a504f139100B889C7280074C028eb318bB";
@@ -300,6 +327,14 @@ mod tests {
         let card = uuid_card("a cup of coffee");
         // assert_eq!(card.id.to_string(), "c145c9f2-d1a6-4118-919f-6b97cf0927d5");
         assert_eq!(card.name, "a cup of coffee");
+    }
+
+    #[test]
+    fn test_primitive_types_u256() {
+        // https://github.com/paritytech/parity-common/blob/master/uint/tests/uint_tests.rs
+        let e = U256([16,0,0,0]);
+        let ua = U256::from(16);
+        assert_eq!(e, ua);
     }
 
 }

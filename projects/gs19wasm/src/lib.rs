@@ -4,11 +4,16 @@ extern crate base58;
 extern crate rustlibsecp256k1;
 extern crate tiny_keccak;
 extern crate uuid;
-use addr::{addr_bitcoin_fork, AddrHashKind, AddrNetwork};
+extern crate rustc_hex;
+use addr::{addr_bitcoin_fork, addr_ethereum_fork, AddrHashKind, AddrNetwork};
 use bip39::{Language, Mnemonic, MnemonicType};
 use rustlibsecp256k1::{PublicKey, SecretKey};
-use utils::to_hex_string;
 use wasm_bindgen::prelude::*;
+use rustc_hex::{FromHex, ToHex};
+use std::collections::HashMap;
+
+#[macro_use]
+extern crate serde_derive;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
@@ -29,10 +34,57 @@ macro_rules! console_log {
     ($($t:tt)*) => (log(&format_args!($($t)*).to_string()))
 }
 
+#[derive(Serialize)]
+pub struct AddressValue {
+    pub data: HashMap<String, String>,
+}
+
 #[wasm_bindgen]
-pub fn crypto_testlog(){
-    secp256k1_key();
-    // get_mnemonic();
+pub fn get_address(hexNum: &str) -> JsValue {
+
+    let secret : Vec<u8> = hexNum.from_hex().unwrap();
+    let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
+    let pubkey = PublicKey::from_secret_key(&seckey);
+    let pser = pubkey.serialize_compressed();
+
+    let addr_bitcoin = addr_bitcoin_fork(
+        &pser,
+        AddrNetwork::BitcoinMainnet,
+        AddrHashKind::P2PKH, false,);
+    let addr_litecoin = addr_bitcoin_fork(
+        &pser,
+        AddrNetwork::LitecoinMainnet,
+        AddrHashKind::P2PKH, false,);
+    let addr_dogecoin = addr_bitcoin_fork(
+        &pser,
+        AddrNetwork::DogecoinMainnet,
+        AddrHashKind::P2PKH, false,);
+
+
+    let addr_ethereum = addr_ethereum_fork(&pubkey.serialize()[..], true);
+
+    let mut data = HashMap::new();
+    data.insert(String::from("bitcoin"), addr_bitcoin);
+    data.insert(String::from("litecoin"), addr_litecoin);
+    data.insert(String::from("dogecoin"), addr_dogecoin);
+    data.insert(String::from("ethereum"), addr_ethereum);
+    let av = AddressValue {
+        data,
+    };
+
+    JsValue::from_serde(&av).unwrap()
+}
+
+#[wasm_bindgen]
+pub fn bitcoin_addr(hexNum: &str) -> String{
+    // let secret : Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001".from_hex().unwrap();
+    let secret : Vec<u8> = hexNum.from_hex().unwrap();
+    let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
+    let pubkey = PublicKey::from_secret_key(&seckey);
+    addr_bitcoin_fork(
+        &pubkey.serialize_compressed(),
+        AddrNetwork::BitcoinMainnet,
+        AddrHashKind::P2PKH, false,)
 }
 
 #[wasm_bindgen]
@@ -52,8 +104,11 @@ pub fn secp256k1_key() {
     let seckey = SecretKey::parse(&secret).unwrap();
     let pubkey = PublicKey::from_secret_key(&seckey);
     // let pubkey_compressed = PublicKey::parse_compressed(&pubkey.serialize_compressed()).unwrap();
-    let pri_hex_string = to_hex_string(secret.to_vec());
-    let hex_string = to_hex_string(pubkey.serialize_compressed().to_vec());
+    // let pri_hex_string = to_hex_string(secret.to_vec());
+    let pri_hex_string = secret.to_hex::<String>();
+
+    // let hex_string = to_hex_string(pubkey.serialize_compressed().to_vec());
+    let hex_string = pubkey.serialize_compressed().to_hex::<String>();
     console_log!("secp256k1 test");
     console_log!("private key: {}", pri_hex_string);
     console_log!("public key: {}", hex_string);

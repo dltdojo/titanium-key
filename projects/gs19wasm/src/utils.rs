@@ -1,3 +1,4 @@
+
 pub fn set_panic_hook() {
     // When the `console_error_panic_hook` feature is enabled, we can call the
     // `set_panic_hook` function at least once during initialization, and then
@@ -9,7 +10,7 @@ pub fn set_panic_hook() {
     console_error_panic_hook::set_once();
 }
 
-pub fn to_hex_string(bytes: Vec<u8>) -> String {
-    let strs: Vec<String> = bytes.iter().map(|b| format!("{:02x}", b)).collect();
-    strs.join("")
-}
+// pub fn to_hex_string(bytes: Vec<u8>) -> String {
+//     let strs: Vec<String> = bytes.iter().map(|b| format!("{:02x}", b)).collect();
+//     strs.join("")
+// }
