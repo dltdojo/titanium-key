@@ -182,6 +182,32 @@ pub fn addr_ripple( pubkey_or_hash: &[u8], is_key_hash: bool,) -> String {
     ToXrpBase58::to_base58(addr_bytes.as_slice())
 }
 
+
+// TODO
+pub fn addr_vanity() -> String {
+    // https://github.com/samr7/vanitygen
+    "TODO".to_string()
+}
+
+// 
+// Proof of Burn
+// 1CounterpartyXXXXXXXXXXXXXXXUWLpVr
+// https://en.wikipedia.org/wiki/Counterparty_(platform)
+//
+pub fn addr_burn() -> String {
+    
+    // https://github.com/dltdojo/book2018-quantumxie/blob/master/projects/gij2018/GIJ2018.md
+    // getBtcBurnAddress('1Ghost2o18o715','Z').toString()
+    // 1Ghost2o18o715ZZZZZZZZZZZZZZfTUTEh
+    // prefix = 1Ghost2o18o715
+    // padded = 1Ghost2o18o715ZZZZZZZZZZZZZZZZZZZZ
+    // hash160 = Base58.decode(padded).slice(1, 21);
+    // address = new bitcorelib.Address(hash160, net);
+    //          1Ghost2o18o715ZZZZZZZZZZZZZZfTUTEh
+
+    "TODO".to_string()
+}
+
 pub fn uuid_card(name: &str) -> UuidCard {
     let id = Uuid::new_v4();
     UuidCard {
