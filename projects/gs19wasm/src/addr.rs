@@ -186,10 +186,12 @@ pub fn addr_ripple( pubkey_or_hash: &[u8], is_key_hash: bool,) -> String {
 // TODO
 pub fn addr_vanity() -> String {
     // https://github.com/samr7/vanitygen
+    // https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch04.asciidoc#vanity-addresses
+
     "TODO".to_string()
 }
 
-// 
+// TODO
 // Proof of Burn
 // 1CounterpartyXXXXXXXXXXXXXXXUWLpVr
 // https://en.wikipedia.org/wiki/Counterparty_(platform)
@@ -303,6 +305,35 @@ mod tests {
             true,
         );
         assert_eq!("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i", x);
+    }
+
+    #[test]
+    fn test_bitcoin_addr_p2sh_hash(){
+        // https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch07.asciidoc
+        // https://en.bitcoin.it/wiki/Pay_to_script_hash
+        // https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki
+        // https://github.com/bitcoinjs/bitcoinjs-lib/blob/master/test/fixtures/address.json
+        // "hash": "cd7b44d0b03f2d026d1e586d7ae18903b0d385f6",
+        // "base58check": "3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr",
+        // "script": "OP_HASH160 cd7b44d0b03f2d026d1e586d7ae18903b0d385f6 OP_EQUAL"
+        let script_hash = "cd7b44d0b03f2d026d1e586d7ae18903b0d385f6";
+
+        let script_vec: Vec<u8> = script_hash.from_hex().unwrap();
+        let x = addr_bitcoin_fork(
+            &script_vec[..],
+            AddrNetwork::BitcoinMainnet,
+            AddrHashKind::P2SH,
+            true,
+        );
+        assert_eq!("3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr", x);
+    }
+
+    // TODO
+    fn test_bitcoin_addr_p2sh_script(){
+        // https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch07.asciidoc
+        // 2 <Mohammed's Public Key> <Partner1 Public Key> <Partner2 Public Key> <Partner3 Public Key> <Attorney Public Key> 5 CHECKMULTISIG
+        // hash160(script)
+        assert_eq!("3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr", "TODO");
     }
 
     #[test]

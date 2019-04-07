@@ -34,6 +34,12 @@ Address: 加密貨幣之地址
 
 - https://example.com/card?uuid=c145c9f2-d1a6-4118-919f-6b97cf0927d5
 
+# Pay to Script Hash(P2SH) / Persistent Script / Smart Contract
+
+- https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki
+- https://etherscan.io/address/dltdojo.eth
+
+
 # 參考資料
 
 - [bitcoinbook_2nd_zh/第四章.asciidoc at master · cypherpunks-core/bitcoinbook_2nd_zh](https://github.com/cypherpunks-core/bitcoinbook_2nd_zh/blob/master/%E7%AC%AC%E5%9B%9B%E7%AB%A0.asciidoc#%E5%AF%86%E9%91%B0%E5%92%8C%E5%9C%B0%E5%9D%80)
