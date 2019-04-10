@@ -3,12 +3,12 @@
 
 cd "$(dirname "$0")"
 
-VER=190405-1
+VER=190410-1
 
 build(){
     wasm-pack build --target web
     rm -rf web/dist
-    mkdir web/dist
+    mkdir -p web/dist
     cp pkg/gs19wasm_bg.wasm web/dist/gs19wasm-${VER}.wasm
     cp pkg/gs19wasm.js web/dist/gs19wasm-${VER}.js
     cp index.html web/dist/index.html

@@ -23,6 +23,9 @@ primitive-types = { version = "0.2.1", default-features = false, features = ["co
 rustc-hex = { version = "2.0.1", default-features = false }
 serde = "^1.0.59"
 serde_derive = "^1.0.59"
+etcommon-rlp = { version = "0.2", default-features = false }
+simple_asn1 = { version="0.4.0" }
+hex-literal = { version = "0.1.4", optional = false }
 
 # The `console_error_panic_hook` crate provides better debugging of panics by
 # logging them with `console.error`. This is great for development, but requires
@@ -37,6 +40,15 @@ console_error_panic_hook = { version = "0.1.1", optional = true }
 # Unfortunately, `wee_alloc` requires nightly Rust when targeting wasm for now.
 wee_alloc = { version = "0.4.2", optional = true }
 
+[dependencies.wasm-bindgen]
+version = "^0.2"
+features = ["serde-serialize"]
+
+[dependencies.substrate_primitives]
+git = 'https://github.com/paritytech/substrate.git'
+package = 'substrate-primitives'
+rev = '82744fbb6f4d677f2edfe9d88737c237622c97a4'
+
 [dev-dependencies]
 wasm-bindgen-test = "0.2"
 rand = { version = "0.6.5", features = ["wasm-bindgen"] }
@@ -45,6 +57,3 @@ rand = { version = "0.6.5", features = ["wasm-bindgen"] }
 # Tell `rustc` to optimize for small code size.
 opt-level = "s"
 
-[dependencies.wasm-bindgen]
-version = "^0.2"
-features = ["serde-serialize"]

@@ -1,11 +1,13 @@
 use base58::ToBase58;
+use crate::utils::*;
 use crate::xrpbase58::ToXrpBase58;
 // use crate::utils::{to_hex_string};
+use hex_literal::*;
 use ripemd160::{Digest, Ripemd160};
+use rustc_hex::{FromHex, ToHex};
 use sha2::Sha256;
 use tiny_keccak::Keccak;
 use uuid::Uuid;
-use rustc_hex::{FromHex, ToHex};
 
 pub struct UuidCard {
     pub id: Uuid,
@@ -114,7 +116,7 @@ pub fn addr_bitcoin_fork(
 pub fn addr_ethereum_fork(pubkey: &[u8], is_eip55: bool) -> String {
     // It is worth noting that the public key is not formatted with the prefix (hex) 04 when the address is calculated.
     let hashed_key = keccak256(&pubkey[1..65]);
-    let addr : String = hashed_key[12..].to_hex();
+    let addr: String = hashed_key[12..].to_hex();
     if is_eip55 {
         eth_checksum(&addr)
     } else {
@@ -160,12 +162,11 @@ fn eip55_checksum(addr: &str, addr_hash: &str) -> String {
     checksum_addr
 }
 
-
-pub fn addr_ripple( pubkey_or_hash: &[u8], is_key_hash: bool,) -> String {
-    // XRP Ledger addresses are encoded using base58  with the Ripple dictionary: rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz. 
+pub fn addr_ripple(pubkey_or_hash: &[u8], is_key_hash: bool) -> String {
+    // XRP Ledger addresses are encoded using base58  with the Ripple dictionary: rpshnaf39wBUDNEGHJKLM4PQRST7VWXYZ2bcdeCg65jkm8oFqi1tuvAxyz.
     // https://github.com/ripple/ripple-dev-portal/blob/master/content/_code-samples/address_encoding/encode_address.js#L4
 
-     // Base58Check version prefix
+    // Base58Check version prefix
     let mut addr_bytes: Vec<u8> = vec![0x00];
 
     // check public key hash
@@ -182,7 +183,6 @@ pub fn addr_ripple( pubkey_or_hash: &[u8], is_key_hash: bool,) -> String {
     ToXrpBase58::to_base58(addr_bytes.as_slice())
 }
 
-
 // TODO
 pub fn addr_vanity() -> String {
     // https://github.com/samr7/vanitygen
@@ -197,7 +197,6 @@ pub fn addr_vanity() -> String {
 // https://en.wikipedia.org/wiki/Counterparty_(platform)
 //
 pub fn addr_burn() -> String {
-    
     // https://github.com/dltdojo/book2018-quantumxie/blob/master/projects/gij2018/GIJ2018.md
     // getBtcBurnAddress('1Ghost2o18o715','Z').toString()
     // 1Ghost2o18o715ZZZZZZZZZZZZZZfTUTEh
@@ -208,6 +207,33 @@ pub fn addr_burn() -> String {
     //          1Ghost2o18o715ZZZZZZZZZZZZZZfTUTEh
 
     "TODO".to_string()
+}
+
+// bitcoin script
+// https://github.com/wildcatgerry/bitcoin-asm/blob/master/src/lib.rs
+pub fn bitcoin_script_to_hex(cmdline: String) -> String {
+    let script =
+        "OP_DUP OP_HASH160 788464014149d93b4a6135f3d665a0a2d743e6c3 OP_EQUALVERIFY OP_CHECKSIG";
+
+    let mut hex_buffer = String::new();
+    for token in cmdline.split_whitespace() {
+        if token.starts_with("OP_") {
+            hex_buffer.push_str(&format!("{:X}", bitcoin_to_opcode(token)));
+        } else {
+            hex_buffer.push_str(&token.to_uppercase());
+        }
+    }
+
+    hex_buffer
+}
+
+// https://ethereum.stackexchange.com/questions/760/how-is-the-address-of-an-ethereum-contract-computed
+pub fn addr_eth_contract(caller_addr: Vec<u8>, nonce: Vec<u8>) -> String {
+    let mut rlp = rlp::RlpStream::new_list(2);
+    rlp.append(&caller_addr);
+    rlp.append(&nonce);
+    let hashed_rlp_data = keccak256(&rlp.out());
+    hashed_rlp_data[12..].to_hex()
 }
 
 pub fn uuid_card(name: &str) -> UuidCard {
@@ -221,8 +247,9 @@ pub fn uuid_card(name: &str) -> UuidCard {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use primitive_types::{U256,H256};
+    use primitive_types::{H256, U256};
     use rustlibsecp256k1::{PublicKey, SecretKey};
+    use substrate_primitives::ed25519::Pair;
 
     #[test]
     fn test_hash160() {
@@ -271,17 +298,19 @@ mod tests {
 
     #[test]
     fn test_bitcoin_addr1_from_key() {
-        let secret : Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001".from_hex().unwrap();
+        let secret: Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001"
+            .from_hex()
+            .unwrap();
         let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
         let pubkey = PublicKey::from_secret_key(&seckey);
         let x = addr_bitcoin_fork(
             &pubkey.serialize_compressed(),
             AddrNetwork::BitcoinMainnet,
-            AddrHashKind::P2PKH, false,);
+            AddrHashKind::P2PKH,
+            false,
+        );
         assert_eq!("1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH", x);
     }
-
-
 
     #[test]
     fn test_bitcoin_addr_hash() {
@@ -308,7 +337,7 @@ mod tests {
     }
 
     #[test]
-    fn test_bitcoin_addr_p2sh_hash(){
+    fn test_bitcoin_addr_p2sh_hash() {
         // https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch07.asciidoc
         // https://en.bitcoin.it/wiki/Pay_to_script_hash
         // https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki
@@ -328,10 +357,19 @@ mod tests {
         assert_eq!("3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr", x);
     }
 
+    #[test]
+    fn test_bitcoin_script_to_hex() {
+        let cmdline =
+            "OP_DUP OP_HASH160 788464014149d93b4a6135f3d665a0a2d743e6c3 OP_EQUALVERIFY OP_CHECKSIG";
+        let sh_hex = bitcoin_script_to_hex(cmdline.to_string());
+        assert_eq!("76A9788464014149D93B4A6135F3D665A0A2D743E6C388AC", sh_hex);
+    }
+
     // TODO
-    fn test_bitcoin_addr_p2sh_script(){
+    fn test_bitcoin_addr_p2sh_script() {
         // https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch07.asciidoc
-        // 2 <Mohammed's Public Key> <Partner1 Public Key> <Partner2 Public Key> <Partner3 Public Key> <Attorney Public Key> 5 CHECKMULTISIG
+        // Redeem Script
+        // 2 PubKey1 PubKey2 PubKey3 3 CHECKMULTISIG
         // hash160(script)
         assert_eq!("3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr", "TODO");
     }
@@ -382,7 +420,9 @@ mod tests {
 
     #[test]
     fn test_ethereum_addr1_key() {
-        let secret : Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001".from_hex().unwrap();
+        let secret: Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001"
+            .from_hex()
+            .unwrap();
         let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
         let pubkey = PublicKey::from_secret_key(&seckey);
         let x = addr_ethereum_fork(&pubkey.serialize()[..], true);
@@ -391,6 +431,35 @@ mod tests {
         assert_eq!("7e5f4552091a69125d5dfcb7b8c2659029395bdf", y);
     }
 
+    // https://ethereum.stackexchange.com/questions/760/how-is-the-address-of-an-ethereum-contract-computed
+    // For sender 0x6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0, the contract addresses that it will create are the following:
+    // nonce0= "0xcd234a471b72ba2f1ccf0a70fcaba648a5eecd8d"
+    // nonce1= "0x343c43a37d37dff08ae8c4a11544c718abb4fcf8"
+    // nonce2= "0xf778b86fa74e846c4f0a1fbd1335fe81c00a0c91"
+    // nonce3= "0xfffd933a0bc612844eaf0c6fe3e5b8e9b6c1d19c"
+    #[test]
+    fn test_addr_eth_contract() {
+        let caller = "6ac7ea33f8831ea9dcc53393aaa88b25a785dbf0";
+        let caller_vec: Vec<u8> = caller.from_hex().unwrap();
+        let addr1 = addr_eth_contract(caller_vec.clone(), vec![0x01]);
+        let addr2 = addr_eth_contract(caller_vec.clone(), vec![0x02]);
+        assert_eq!("343c43a37d37dff08ae8c4a11544c718abb4fcf8", addr1);
+        assert_eq!("f778b86fa74e846c4f0a1fbd1335fe81c00a0c91", addr2);
+
+        // Useless Ethereum Token UET
+        // https://etherscan.io/address/0x27f706edde3aD952EF647Dd67E24e38CD0803DD6
+        // Contract Address : 0x27f706edde3aD952EF647Dd67E24e38CD0803DD6
+        // Contract Create Tx https://etherscan.io/tx/0x7051956b39fe654480b566cec540f735c30886635cb3d1af17e2eee25ab8fac8
+        // Creator Address : 0x00d0fd20924037c2b182d0aa0b139434a0b1a081
+        // nonce : 2
+        let uet_creator = "00d0fd20924037c2b182d0aa0b139434a0b1a081";
+        let uet_creator_vec: Vec<u8> = uet_creator.from_hex().unwrap();
+        let uet_addr = addr_eth_contract(uet_creator_vec.clone(), vec![0x02]);
+        assert_eq!(
+            "27f706edde3aD952EF647Dd67E24e38CD0803DD6".to_ascii_lowercase(),
+            uet_addr
+        );
+    }
 
     #[test]
     fn test_ripple_secp256k1_addr() {
@@ -399,17 +468,29 @@ mod tests {
 
         let pubkey_hex = "0303E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D";
         let pubkey_vec: Vec<u8> = pubkey_hex.from_hex().unwrap();
-        let x = addr_ripple(
-            &pubkey_vec[..], false,);
+        let x = addr_ripple(&pubkey_vec[..], false);
         assert_eq!("rnBFvgZphmN39GWzUJeUitaP22Fr9be75H", x);
     }
-
 
     #[test]
     fn test_eth_checksum() {
         let addr = "0x5699b1a504f139100b889c7280074c028eb318bb";
         let res = "5699b1a504f139100B889C7280074C028eb318bB";
         assert_eq!(eth_checksum(addr), res);
+    }
+
+    // External Address Format (SS58) · paritytech/substrate Wiki
+    // https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)
+    fn test_substrate_addr() {
+        let pair: Pair = Pair::from_seed(&hex!(
+            "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"
+        ));
+        let public = pair.public();
+        // TODO
+        // let public_target = Pair::Public::from_raw(&hex!(
+        //    "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
+        //));
+        // assert_eq!(public, public_target);
     }
 
     fn test_from_hex_okay() {
@@ -426,7 +507,7 @@ mod tests {
     #[test]
     fn test_primitive_types_u256() {
         // https://github.com/paritytech/parity-common/blob/master/uint/tests/uint_tests.rs
-        let e = U256([16,0,0,0]);
+        let e = U256([16, 0, 0, 0]);
         let ua = U256::from(16);
         assert_eq!(e, ua);
     }
