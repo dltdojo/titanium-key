@@ -249,7 +249,7 @@ mod tests {
     use super::*;
     use primitive_types::{H256, U256};
     use rustlibsecp256k1::{PublicKey, SecretKey};
-    use substrate_primitives::ed25519::Pair;
+    // use substrate_primitives::ed25519::Pair;
 
     #[test]
     fn test_hash160() {
@@ -479,19 +479,22 @@ mod tests {
         assert_eq!(eth_checksum(addr), res);
     }
 
+    // 
+    // ring wasm build issue
+    // 
     // External Address Format (SS58) · paritytech/substrate Wiki
     // https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)
-    fn test_substrate_addr() {
-        let pair: Pair = Pair::from_seed(&hex!(
-            "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"
-        ));
-        let public = pair.public();
+    //fn test_substrate_addr() {
+    //    let pair: Pair = Pair::from_seed(&hex!(
+    //        "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"
+    //    ));
+    //    let public = pair.public();
         // TODO
         // let public_target = Pair::Public::from_raw(&hex!(
         //    "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
         //));
         // assert_eq!(public, public_target);
-    }
+    //}
 
     fn test_from_hex_okay() {
         assert_eq!("666f6f626172".from_hex::<Vec<_>>().unwrap(), b"foobar");

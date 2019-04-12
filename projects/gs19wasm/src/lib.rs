@@ -6,7 +6,6 @@ extern crate hex_literal;
 extern crate rlp;
 extern crate rustc_hex;
 extern crate rustlibsecp256k1;
-extern crate substrate_primitives;
 extern crate tiny_keccak;
 extern crate uuid;
 use addr::*;
