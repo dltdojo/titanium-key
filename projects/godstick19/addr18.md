@@ -29,13 +29,25 @@ Address: 加密貨幣之地址
 - 💩 Pile of Poo emoji - Wikipedia https://en.wikipedia.org/wiki/Pile_of_Poo_emoji
 - 🈲 🈹 🌾 💴 💵 💶 💷 🙈 🙉 🙊	
 
+### 範例 
+
+- 14qadWQ4VufiE2BUFGpWEM3CJRYyayExA9 aka 0x9487 https://www.blockchain.com/btc/address/14qadWQ4VufiE2BUFGpWEM3CJRYyayExA9
+
+# Proof of Burn
+
+- Bitcoin Address 1Ghost2o18o715ZZZZZZZZZZZZZZfTUTEh https://www.blockchain.com/btc/address/1Ghost2o18o715ZZZZZZZZZZZZZZfTUTEh
+- 1CounterpartyXXXXXXXXXXXXXXXUWLpVr  https://en.wikipedia.org/wiki/Counterparty_(platform)
+- Ethereum Account https://etherscan.io/address/0x011111111111111111111111111111111119dead
+- https://github.com/dltdojo/book2018-quantumxie/blob/master/projects/gij2018/GIJ2018.md
+- https://github.com/samr7/vanitygen
+- https://github.com/bitcoinbook/bitcoinbook/blob/develop/ch04.asciidoc#vanity-addresses
+
 # Pay to Script Hash(P2SH) 
 
 Persistent Script / Smart Contract
 
 - Pay to Script Hash https://github.com/bitcoin/bips/blob/master/bip-0016.mediawiki
 - Useless Ethereum Token UET https://etherscan.io/address/0x27f706edde3aD952EF647Dd67E24e38CD0803DD6
-
 
 # Name Service
 

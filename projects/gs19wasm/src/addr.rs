@@ -8,6 +8,10 @@ use rustc_hex::{FromHex, ToHex};
 use sha2::Sha256;
 use tiny_keccak::Keccak;
 use uuid::Uuid;
+use rustlibsecp256k1::PublicKey as Secp256k1PublicKey;
+use rustlibsecp256k1::SecretKey as Secp256k1SecretKey;
+use ed25519_dalek::PublicKey as Ed25519PublicKey;
+use ed25519_dalek::SecretKey as Ed25519SecretKey;
 
 pub struct UuidCard {
     pub id: Uuid,
@@ -244,12 +248,28 @@ pub fn uuid_card(name: &str) -> UuidCard {
     }
 }
 
+// Add no-std support by elichai · Pull Request #100 · rust-bitcoin/rust-secp256k1 https://github.com/rust-bitcoin/rust-secp256k1/pull/100
+// Allow to use external default callbacks by real-or-random · Pull Request #595 · bitcoin-core/secp256k1 https://github.com/bitcoin-core/secp256k1/pull/595
+// gen privatekey and publickey from crate rustlibsecp256k1
+// https://docs.rs/crate/libsecp256k1/0.2.2/source/tests/verify.rs
+pub fn secp256k1_to_pubkey(pri_key_hex : String) -> Secp256k1PublicKey {
+    let secret: Vec<u8> = pri_key_hex.from_hex().unwrap();
+    let seckey = Secp256k1SecretKey::parse_slice(&secret[..]).unwrap();
+    Secp256k1PublicKey::from_secret_key(&seckey)
+}
+
+// https://docs.rs/crate/ed25519-dalek/1.0.0-pre.1/source/tests/ed25519.rs
+pub fn ed25519_to_pubkey(pri_key_hex : String) -> Ed25519PublicKey {
+    let secret: Vec<u8> = pri_key_hex.from_hex().unwrap();
+    let seckey = Ed25519SecretKey::from_bytes(&secret[..]).unwrap();
+    (&seckey).into()
+}
+
 #[cfg(test)]
 mod tests {
     use super::*;
     use primitive_types::{H256, U256};
-    use rustlibsecp256k1::{PublicKey, SecretKey};
-    // use substrate_primitives::ed25519::Pair;
+    //use substrate_primitives::ed25519::Pair;
 
     #[test]
     fn test_hash160() {
@@ -298,11 +318,7 @@ mod tests {
 
     #[test]
     fn test_bitcoin_addr1_from_key() {
-        let secret: Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001"
-            .from_hex()
-            .unwrap();
-        let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
-        let pubkey = PublicKey::from_secret_key(&seckey);
+        let pubkey = secp256k1_to_pubkey("0000000000000000000000000000000000000000000000000000000000000001".to_string());
         let x = addr_bitcoin_fork(
             &pubkey.serialize_compressed(),
             AddrNetwork::BitcoinMainnet,
@@ -420,11 +436,7 @@ mod tests {
 
     #[test]
     fn test_ethereum_addr1_key() {
-        let secret: Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001"
-            .from_hex()
-            .unwrap();
-        let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
-        let pubkey = PublicKey::from_secret_key(&seckey);
+        let pubkey : Secp256k1PublicKey = secp256k1_to_pubkey("0000000000000000000000000000000000000000000000000000000000000001".to_string());
         let x = addr_ethereum_fork(&pubkey.serialize()[..], true);
         let y = addr_ethereum_fork(&pubkey.serialize()[..], false);
         assert_eq!("7e5F4552091a69125d5DfCb7b8C2659029395Bdf", x);
@@ -479,22 +491,30 @@ mod tests {
         assert_eq!(eth_checksum(addr), res);
     }
 
-    // 
-    // ring wasm build issue
+    #[test]
+    fn test_ed25519_keys() {
+        // https://docs.rs/crate/ed25519-dalek/1.0.0-pre.1/source/tests/ed25519.rs
+        // From https://tools.ietf.org/html/rfc8032#section-7.3
+        // let secret_key: &[u8] = b"833fe62409237b9d62ec77587520911e9a759cec1d19755b7da901b96dca3d42";
+        // let public_key: &[u8] = b"ec172b93ad5e563bf4932c70e1245034c35467ef2efd4d64ebf819683467e2bf";
+        let pubkey : Ed25519PublicKey = ed25519_to_pubkey("833fe62409237b9d62ec77587520911e9a759cec1d19755b7da901b96dca3d42".to_string());
+        assert_eq!("ec172b93ad5e563bf4932c70e1245034c35467ef2efd4d64ebf819683467e2bf", pubkey.to_bytes().to_hex::<String>());
+    }
+
+    fn test_substrate_addr() {
     // 
     // External Address Format (SS58) · paritytech/substrate Wiki
     // https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)
-    //fn test_substrate_addr() {
     //    let pair: Pair = Pair::from_seed(&hex!(
-    //        "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"
+    //       "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"
     //    ));
     //    let public = pair.public();
         // TODO
         // let public_target = Pair::Public::from_raw(&hex!(
-        //    "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
-        //));
-        // assert_eq!(public, public_target);
-    //}
+        //   "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
+        // ));
+    //    assert_eq!(public, public_target);
+    }
 
     fn test_from_hex_okay() {
         assert_eq!("666f6f626172".from_hex::<Vec<_>>().unwrap(), b"foobar");

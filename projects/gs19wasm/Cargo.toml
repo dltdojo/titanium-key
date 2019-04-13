@@ -44,12 +44,24 @@ wee_alloc = { version = "0.4.2", optional = true }
 version = "^0.2"
 features = ["serde-serialize"]
 
+[dependencies.curve25519-dalek]
+# git = "https://github.com/dalek-cryptography/curve25519-dalek"
+version = "1.0"
+default-features = false
+features = ["u64_backend"]
+
+[dependencies.ed25519-dalek]
+version = "1.0.0-pre.1"
+default-features = false
+features = ["u64_backend"]
+
 # 
 # TODO ring wasm build issue 
 #[dependencies.substrate_primitives]
 #git = 'https://github.com/paritytech/substrate.git'
 #package = 'substrate-primitives'
 #rev = '82744fbb6f4d677f2edfe9d88737c237622c97a4'
+#default-features = false
 
 [dev-dependencies]
 wasm-bindgen-test = "0.2"
