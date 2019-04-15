@@ -6,13 +6,14 @@ extern crate bech32;
 extern crate rlp;
 extern crate rustc_hex;
 extern crate rustlibsecp256k1;
-extern crate substrate_primitives;
 extern crate tiny_keccak;
 extern crate uuid;
+extern crate curve25519_dalek;
+extern crate ed25519_dalek;
 use addr::*;
 use bip39::{Language, Mnemonic, MnemonicType};
 use rustc_hex::{FromHex, ToHex};
-use rustlibsecp256k1::{PublicKey, SecretKey};
+use rustlibsecp256k1::PublicKey as Secp256k1PublicKey;
 use std::collections::HashMap;
 use wasm_bindgen::prelude::*;
 
@@ -48,9 +49,7 @@ pub struct AddressValue {
 
 #[wasm_bindgen]
 pub fn get_address(hex_num: &str) -> JsValue {
-    let secret: Vec<u8> = hex_num.from_hex().unwrap();
-    let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
-    let pubkey = PublicKey::from_secret_key(&seckey);
+    let pubkey : Secp256k1PublicKey = secp256k1_to_pubkey(hex_num.to_string());
     let pser = pubkey.serialize_compressed();
 
     let addr_bitcoin = addr_bitcoin_fork(
@@ -99,60 +98,13 @@ pub fn get_address(hex_num: &str) -> JsValue {
 #[wasm_bindgen]
 pub fn bitcoin_addr(hex_num: &str) -> String {
     // let secret : Vec<u8> = "0000000000000000000000000000000000000000000000000000000000000001".from_hex().unwrap();
-    let secret: Vec<u8> = hex_num.from_hex().unwrap();
-    let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
-    let pubkey = PublicKey::from_secret_key(&seckey);
+    let pubkey : Secp256k1PublicKey = secp256k1_to_pubkey(hex_num.to_string());
     addr_bitcoin_fork(
         &pubkey.serialize_compressed(),
         AddrNetwork::BitcoinMainnet,
         AddrHashKind::P2PKH,
         false,
     )
-}
-
-#[wasm_bindgen]
-pub fn secp256k1_key() {
-    //
-    // Add no-std support by elichai · Pull Request #100 · rust-bitcoin/rust-secp256k1 https://github.com/rust-bitcoin/rust-secp256k1/pull/100
-    // Allow to use external default callbacks by real-or-random · Pull Request #595 · bitcoin-core/secp256k1 https://github.com/bitcoin-core/secp256k1/pull/595
-    // gen privatekey and publickey from crate rustlibsecp256k1
-    // https://docs.rs/crate/libsecp256k1/0.2.2/source/tests/verify.rs
-    //
-    let secret: [u8; 32] = [
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00,
-        0x00, 0x01,
-    ];
-
-    let seckey = SecretKey::parse(&secret).unwrap();
-    let pubkey = PublicKey::from_secret_key(&seckey);
-    // let pubkey_compressed = PublicKey::parse_compressed(&pubkey.serialize_compressed()).unwrap();
-    // let pri_hex_string = to_hex_string(secret.to_vec());
-    let pri_hex_string = secret.to_hex::<String>();
-
-    // let hex_string = to_hex_string(pubkey.serialize_compressed().to_vec());
-    let hex_string = pubkey.serialize_compressed().to_hex::<String>();
-    console_log!("secp256k1 test");
-    console_log!("private key: {}", pri_hex_string);
-    console_log!("public key: {}", hex_string);
-
-    let addr = addr_bitcoin_fork(
-        &pubkey.serialize(),
-        AddrNetwork::BitcoinMainnet,
-        AddrHashKind::P2PKH,
-        false,
-    );
-    let addr_compressed = addr_bitcoin_fork(
-        &pubkey.serialize_compressed(),
-        AddrNetwork::BitcoinMainnet,
-        AddrHashKind::P2PKH,
-        false,
-    );
-    console_log!("bitcoin address: {}", addr_compressed);
-    console_log!("uncompressed address: {}", addr);
-
-    // Bitcoin address: 1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH
-    // uncompressed:  1EHNa6Q4Jz2uvNExL497mE43ikXhwF6kZm
 }
 
 #[wasm_bindgen]
