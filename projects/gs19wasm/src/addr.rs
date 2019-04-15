@@ -2,7 +2,7 @@ use base58::ToBase58;
 use crate::utils::*;
 use crate::xrpbase58::ToXrpBase58;
 // use crate::utils::{to_hex_string};
-use hex_literal::*;
+use bech32::Bech32;
 use ripemd160::{Digest, Ripemd160};
 use rustc_hex::{FromHex, ToHex};
 use sha2::Sha256;
@@ -260,8 +260,8 @@ mod tests {
         let pubkey_vec: Vec<u8> = pubkey_hex.from_hex().unwrap();
         let x = hash160(&pubkey_vec[..]);
         assert_eq!(
+            x.to_hex::<String>(),
             "7322e2bd8535e476c092934e16a6169ca9b707ec",
-            x.to_hex::<String>()
         );
     }
 
@@ -274,8 +274,8 @@ mod tests {
         let pubkey_vec: Vec<u8> = pubkey_hex.from_hex().unwrap();
         let x = sha256sha256(&pubkey_vec[..]);
         assert_eq!(
+            x.to_hex::<String>(),
             "be586c8b20dee549bdd66018c7a79e2b67bb88b7c7d428fa4c970976d2bec5ba",
-            x.to_hex::<String>()
         );
     }
 
@@ -293,7 +293,7 @@ mod tests {
             AddrHashKind::P2PKH,
             false,
         );
-        assert_eq!("19gH5uhqY6DKrtkU66PsZPUZdzTd11Y7ke", x);
+        assert_eq!(x, "19gH5uhqY6DKrtkU66PsZPUZdzTd11Y7ke");
     }
 
     #[test]
@@ -309,7 +309,7 @@ mod tests {
             AddrHashKind::P2PKH,
             false,
         );
-        assert_eq!("1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH", x);
+        assert_eq!(x, "1BgGZ9tcN4rm9KBzDn7KprQz87SZ26SAMH");
     }
 
     #[test]
@@ -333,7 +333,7 @@ mod tests {
             AddrHashKind::P2PKH,
             true,
         );
-        assert_eq!("1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i", x);
+        assert_eq!(x, "1AGNa15ZQXAZUgFiqJ2i7Z2DPU2J6hW62i");
     }
 
     #[test]
@@ -354,7 +354,7 @@ mod tests {
             AddrHashKind::P2SH,
             true,
         );
-        assert_eq!("3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr", x);
+        assert_eq!(x, "3LRW7jeCvQCRdPF8S3yUCfRAx4eqXFmdcr");
     }
 
     #[test]
@@ -362,7 +362,7 @@ mod tests {
         let cmdline =
             "OP_DUP OP_HASH160 788464014149d93b4a6135f3d665a0a2d743e6c3 OP_EQUALVERIFY OP_CHECKSIG";
         let sh_hex = bitcoin_script_to_hex(cmdline.to_string());
-        assert_eq!("76A9788464014149D93B4A6135F3D665A0A2D743E6C388AC", sh_hex);
+        assert_eq!(sh_hex, "76A9788464014149D93B4A6135F3D665A0A2D743E6C388AC");
     }
 
     // TODO
@@ -386,7 +386,7 @@ mod tests {
             AddrHashKind::P2PKH,
             true,
         );
-        assert_eq!("LUxXFcwXFPpRZdMv4aYu6bDwPdC2skQ5YW", x);
+        assert_eq!(x, "LUxXFcwXFPpRZdMv4aYu6bDwPdC2skQ5YW");
     }
     #[test]
     fn test_dogecoin_addr() {
@@ -400,7 +400,7 @@ mod tests {
             AddrHashKind::P2PKH,
             true,
         );
-        assert_eq!("DFpN6QqFfUm3gKNaxN6tNcab1FArL9cZLE", x);
+        assert_eq!(x, "DFpN6QqFfUm3gKNaxN6tNcab1FArL9cZLE");
     }
 
     fn test_to_hex() {
@@ -414,8 +414,8 @@ mod tests {
         let pubkey_vec: Vec<u8> = pubkey_hex.from_hex().unwrap();
         let addr = addr_ethereum_fork(&pubkey_vec[..], false);
         let eip55_addr = addr_ethereum_fork(&pubkey_vec[..], true);
-        assert_eq!("001d3f1ef827552ae1114027bd3ecf1f086ba0f9", addr);
-        assert_eq!("001d3F1ef827552Ae1114027Bd3ECF1f086bA0F9", eip55_addr);
+        assert_eq!(addr, "001d3f1ef827552ae1114027bd3ecf1f086ba0f9");
+        assert_eq!(eip55_addr, "001d3F1ef827552Ae1114027Bd3ECF1f086bA0F9");
     }
 
     #[test]
@@ -425,10 +425,10 @@ mod tests {
             .unwrap();
         let seckey = SecretKey::parse_slice(&secret[..]).unwrap();
         let pubkey = PublicKey::from_secret_key(&seckey);
-        let x = addr_ethereum_fork(&pubkey.serialize()[..], true);
-        let y = addr_ethereum_fork(&pubkey.serialize()[..], false);
-        assert_eq!("7e5F4552091a69125d5DfCb7b8C2659029395Bdf", x);
-        assert_eq!("7e5f4552091a69125d5dfcb7b8c2659029395bdf", y);
+        let addr_checksum = addr_ethereum_fork(&pubkey.serialize()[..], true);
+        let addr = addr_ethereum_fork(&pubkey.serialize()[..], false);
+        assert_eq!(addr_checksum, "7e5F4552091a69125d5DfCb7b8C2659029395Bdf");
+        assert_eq!(addr, "7e5f4552091a69125d5dfcb7b8c2659029395bdf");
     }
 
     // https://ethereum.stackexchange.com/questions/760/how-is-the-address-of-an-ethereum-contract-computed
@@ -443,8 +443,8 @@ mod tests {
         let caller_vec: Vec<u8> = caller.from_hex().unwrap();
         let addr1 = addr_eth_contract(caller_vec.clone(), vec![0x01]);
         let addr2 = addr_eth_contract(caller_vec.clone(), vec![0x02]);
-        assert_eq!("343c43a37d37dff08ae8c4a11544c718abb4fcf8", addr1);
-        assert_eq!("f778b86fa74e846c4f0a1fbd1335fe81c00a0c91", addr2);
+        assert_eq!(addr1, "343c43a37d37dff08ae8c4a11544c718abb4fcf8");
+        assert_eq!(addr2, "f778b86fa74e846c4f0a1fbd1335fe81c00a0c91");
 
         // Useless Ethereum Token UET
         // https://etherscan.io/address/0x27f706edde3aD952EF647Dd67E24e38CD0803DD6
@@ -456,8 +456,8 @@ mod tests {
         let uet_creator_vec: Vec<u8> = uet_creator.from_hex().unwrap();
         let uet_addr = addr_eth_contract(uet_creator_vec.clone(), vec![0x02]);
         assert_eq!(
-            "27f706edde3aD952EF647Dd67E24e38CD0803DD6".to_ascii_lowercase(),
-            uet_addr
+            uet_addr,
+            "27f706edde3aD952EF647Dd67E24e38CD0803DD6".to_ascii_lowercase()
         );
     }
 
@@ -469,7 +469,7 @@ mod tests {
         let pubkey_hex = "0303E20EC6B4A39A629815AE02C0A1393B9225E3B890CAE45B59F42FA29BE9668D";
         let pubkey_vec: Vec<u8> = pubkey_hex.from_hex().unwrap();
         let x = addr_ripple(&pubkey_vec[..], false);
-        assert_eq!("rnBFvgZphmN39GWzUJeUitaP22Fr9be75H", x);
+        assert_eq!(x, "rnBFvgZphmN39GWzUJeUitaP22Fr9be75H");
     }
 
     #[test]
@@ -479,20 +479,20 @@ mod tests {
         assert_eq!(eth_checksum(addr), res);
     }
 
-    // External Address Format (SS58) · paritytech/substrate Wiki
-    // https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)
+    #[test]
     fn test_substrate_addr() {
+        // TODO
+        // External Address Format (SS58) · paritytech/substrate Wiki
+        // https://github.com/paritytech/substrate/wiki/External-Address-Format-(SS58)
+
         let pair: Pair = Pair::from_seed(&hex!(
             "9d61b19deffd5a60ba844af492ec2cc44449c5697b326919703bac031cae7f60"
         ));
         let public = pair.public();
-        // TODO
-        // let public_target = Pair::Public::from_raw(&hex!(
-        //    "d75a980182b10ab7d54bfed3c964073a0ee172f3daa62325af021a68f707511a"
-        //));
-        // assert_eq!(public, public_target);
+        assert_ne!(public.to_string(), "TODO");
     }
 
+    #[test]
     fn test_from_hex_okay() {
         assert_eq!("666f6f626172".from_hex::<Vec<_>>().unwrap(), b"foobar");
     }
@@ -502,6 +502,26 @@ mod tests {
         let card = uuid_card("a cup of coffee");
         // assert_eq!(card.id.to_string(), "c145c9f2-d1a6-4118-919f-6b97cf0927d5");
         assert_eq!(card.name, "a cup of coffee");
+    }
+
+    #[test]
+    fn test_bech32() {
+        // https://github.com/rust-bitcoin/rust-bech32
+        // Rust implementation of the Bech32 encoding format described in BIP-0173.
+        let human_readable_part = "bech32";
+        let b = Bech32::new_check_data(human_readable_part.into(), vec![0x00, 0x01, 0x02]).unwrap();
+        let encoded = b.to_string();
+        assert_eq!(encoded, "bech321qpz4nc4pe".to_string());
+
+        // hrp checksum test
+        let b2 = Bech32::new_check_data("hrp32".into(), vec![0x00, 0x01, 0x02]).unwrap();
+        assert_ne!(b2.to_string(), "hrp321qpz4nc4pe".to_string());
+        assert_eq!(b2.to_string(), "hrp321qpz0v68n6".to_string());
+        // https://github.com/bitcoin/bips/blob/master/bip-0173.mediawiki
+        // 0279BE667EF9DCBBAC55A06295CE870B07029BFCDB2DCE28D959F2815B16F81798
+
+        let c = encoded.parse::<Bech32>();
+        assert_eq!(b, c.unwrap());
     }
 
     #[test]

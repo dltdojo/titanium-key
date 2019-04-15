@@ -2,7 +2,7 @@ mod addr;
 mod utils;
 mod xrpbase58;
 extern crate base58;
-extern crate hex_literal;
+extern crate bech32;
 extern crate rlp;
 extern crate rustc_hex;
 extern crate rustlibsecp256k1;
@@ -18,6 +18,9 @@ use wasm_bindgen::prelude::*;
 
 #[macro_use]
 extern crate serde_derive;
+
+#[macro_use]
+extern crate hex_literal;
 
 // When the `wee_alloc` feature is enabled, use `wee_alloc` as the global
 // allocator.
