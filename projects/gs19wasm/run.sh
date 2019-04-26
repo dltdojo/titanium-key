@@ -3,7 +3,7 @@
 
 cd "$(dirname "$0")"
 
-VER=190413-1
+VER=190426-1
 
 build(){
     wasm-pack build --target web

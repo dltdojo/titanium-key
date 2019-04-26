@@ -36,17 +36,30 @@
     <div id="app">
       <h2>🦀 地址 🚴 addr18 🕸️</h2>
       <pre>
-    Elliptic Curve Multiplication
-    y^2 = x^3+ax+b over Fp
-    (x,y) = n * G
-+----------+         +---------+         +---------+
-|          +--------->         +--------->         |
-|PrivateKey|         |PublicKey|         | Address |
-|    n     |         |  (x,y)  |         |   Str   |
-|          <----X----+         <----X----+         |
-+----------+         +---------+         +---------+
-                         Cryptographic Hash Function
-
+            +----------------+
+            |                |
+            |   PrivateKey   |
+            |       n        |
+            |                |
+            +-------^-----+--+
+                    |     |
+Elliptic Curve      x     |
+Multiplication      |     |
+                +---+-----v------+
+y^2 = x^3+ax+b  |                |
+over Fp         |   PublicKey    |
+                |     (x,y)      |
+(x,y) = n * G   |                |
+                +-^----+---------+
+                  |    |
+                  x    |   Cryptographic
+                  |    |   Hash Function
+        +---------+----v-+
+        |                |
+        |    Address     |
+        |      Str       |
+        |                |
+        +----------------+
 Elliptic Curve Multiplication: 橢圓曲線乘法
 Cryptographic Hash Function: 密碼學雜湊函數
 PrivateKey: 非對稱式金鑰對之私鑰

@@ -1,20 +1,34 @@
 # 地址 addr18 (WIP)
 
-- 前端練習網頁 v190405-1 https://jsbin.com/tizonepali/1/
+- 前端練習網頁 https://jsbin.com/vobiduqeqe/edit?html,output
 - 練習網頁樣板 https://github.com/dltdojo/titanium-key/blob/master/projects/gs19wasm/index.html
 - 前端模組 gs19wasm https://github.com/dltdojo/titanium-key/tree/master/projects/gs19wasm
 
 ```
-    Elliptic Curve Multiplication
-    y^2 = x^3+ax+b over Fp
-    (x,y) = n * G
-+----------+         +---------+         +---------+
-|          +--------->         +--------->         |
-|PrivateKey|         |PublicKey|         | Address |
-|    n     |         |  (x,y)  |         |   Str   |
-|          <----X----+         <----X----+         |
-+----------+         +---------+         +---------+
-                         Cryptographic Hash Function
+             +----------------+
+             |                |
+             |   PrivateKey   |
+             |       n        |
+             |                |
+             +-------^-----+--+
+                     |     |
+ Elliptic Curve      x     |
+ Multiplication      |     |
+                 +---+-----v------+
+ y^2 = x^3+ax+b  |                |
+ over Fp         |   PublicKey    |
+                 |     (x,y)      |
+ (x,y) = n * G   |                |
+                 +-^----+---------+
+                   |    |
+                   x    |   Cryptographic
+                   |    |   Hash Function
+         +---------+----v-+
+         |                |
+         |    Address     |
+         |      Str       |
+         |                |
+         +----------------+
 
 Elliptic Curve Multiplication: 橢圓曲線乘法
 Cryptographic Hash Function: 密碼學雜湊函數
